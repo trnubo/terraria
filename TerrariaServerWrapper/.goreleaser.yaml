@@ -1,0 +1,31 @@
+# This is an example .goreleaser.yml file with some sensible defaults.
+# Make sure to check the documentation at https://goreleaser.com
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    - mkdir -p ../tshock/TerrariaServerWrapper
+builds:
+  - main: ./cmd
+    binary: TerrariaServerWrapper
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      # - windows
+      # - darwin
+      # - freebsd
+    goarch:
+      - amd64
+      - arm64
+    hooks:
+      post:
+        - cp {{ .Path}} ../tshock/TerrariaServerWrapper/TerrariaServerWrapper.{{ .Arch }}
+
+release:
+  disable: true
+
+# The lines beneath this are called `modelines`. See `:help modeline`
+# Feel free to remove those if you don't want/use them.
+# yaml-language-server: $schema=https://goreleaser.com/static/schema.json
+# vim: set ts=2 sw=2 tw=0 fo=cnqoj
