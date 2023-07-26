@@ -26,13 +26,17 @@ jobs:
           go-version: '1.20'
 
       # Build TerrariaServerWrapper (we only build a snapshot instead of a full release)
-      - name: Run GoReleaser
+      - name: Install GoReleaser
         uses: goreleaser/goreleaser-action@v4
         with:
           distribution: goreleaser
           version: latest
-          args: --snapshot --clean
-          workdir: TerrariaServerWrapper
+          install-only: true
+
+      - name: Build TerrariaServerWrapper
+        working-directory: ./TerrariaServerWrapper
+        run: |
+          make _ci_build
 
       # Setup some things for the docker build
       - name: Set up QEMU
