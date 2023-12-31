@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"io"
 
 	"github.com/sirupsen/logrus"
 )
@@ -14,6 +15,7 @@ import (
 // os.stdin to the server's stdin pipe
 func (server *Server) startInputLoop(ctx context.Context) {
 	go func() {
+		logrus.Infof("Starting read loop")
 		for {
 			select {
 			case <-ctx.Done():
@@ -21,7 +23,13 @@ func (server *Server) startInputLoop(ctx context.Context) {
 				return
 			default:
 				buf := make([]byte, 1024)
-				n, _ := os.Stdin.Read(buf)
+				n, err := os.Stdin.Read(buf)
+				if err == io.EOF {
+					logrus.Infof("Stdin EOF, exiting read loop")
+					return
+				} else if err != nil {
+					logrus.Fatalf("Exiting due to Stdin.Read: %v", err)
+				}
 				if n == 0 {
 					continue
 				}

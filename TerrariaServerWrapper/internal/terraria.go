@@ -50,7 +50,7 @@ func (server *Server) Start() error {
 	}
 
 	logrus.Infof("Server starting...")
-	// server.ShutdownOnExit()
+	server.ShutdownOnExit()
 	server.startInputLoop(ctx)
 	// server.startAutosaveLoop(ctx)
 	server.startSigtermHandler(ctx)
@@ -58,7 +58,7 @@ func (server *Server) Start() error {
 	// wait for exit
 	<-server.quit
 	// cancel()
-	server.Command.Wait()
+	// server.Command.Wait()
 
 	return nil
 }
@@ -66,15 +66,14 @@ func (server *Server) Start() error {
 func (server *Server) Shutdown() error {
 	// tell the server to save and exit
 	server.Stdin.Write([]byte(exitCommand))
-
-	server.quit <- struct{}{}
+	// TODO: a timeout could be added here to ensure the server actually stops
 	return nil
 }
 
 func (server *Server) ShutdownOnExit() {
 	go func() {
 		server.Command.Wait()
-		server.Shutdown()
+		server.quit <- struct{}{}
 	}()
 }
 

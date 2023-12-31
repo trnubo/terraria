@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 )
 
 func main() {
@@ -28,6 +29,8 @@ func main() {
 				fmt.Println(">", input)
 				if input == "exit" {
 					// Cleanly exit the application if "exit" is entered
+					fmt.Println(">> Saving the world.")
+					time.Sleep(3 * time.Second)
 					fmt.Println(">> Exiting the application.")
 					return
 				}
